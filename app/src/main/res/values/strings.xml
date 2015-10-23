@@ -1,0 +1,32 @@
+<resources>
+    <!--App strings-->
+    <string name="app_name">Popular Movies</string>
+    <string name="action_settings">Settings</string>
+
+    <!--API KEY-->
+    <string name="api_key">ADD_YOUR_API_KEY_HERE</string>
+
+    <!--Preference strings-->
+    <string name="preference_label_sort_order">Sort Order</string>
+    <string name="preference_key_sort_order" translatable="false">sort_order</string>
+    <string name="preference_default_sort_order" translatable="false">popularity.desc</string>
+
+    <string-array name="preference_entries_sort_order">
+        <item>Most Popular</item>
+        <item>Highest Rating</item>
+    </string-array>
+
+    <string-array name="preference_values_sort_order">
+        <item>popularity.desc</item>
+        <item>vote_average.desc</item>
+    </string-array>
+
+    <!-- Application strings-->
+    <string name="title_activity_movie_detail">MovieDetailActivity</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <string name="release_date">Release Date:</string>
+    <string name="vote_average">Vote average:</string>
+    <string name="overview">Overview:</string>
+
+</resources>
