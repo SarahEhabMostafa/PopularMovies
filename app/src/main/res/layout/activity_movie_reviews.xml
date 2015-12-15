@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.sarahehabm.popularmovies.view.MovieReviewsActivity">
+
+    <ListView
+        android:id="@+id/listView_Reviews"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.sarahehabm.popularmovies.view.MovieReviewsActivity" />
+
+    <TextView
+        android:id="@+id/textView_no_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:text="No reviews available"/>
+</LinearLayout>

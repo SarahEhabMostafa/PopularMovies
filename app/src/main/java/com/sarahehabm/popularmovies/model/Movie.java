@@ -1,15 +1,17 @@
 package com.sarahehabm.popularmovies.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by Sarah E. Mostafa on 14-Oct-15.
  */
-public class Movie implements Serializable {
+public class Movie implements Parcelable {
     private boolean adult;
     private String backdrop_path;
     private int[] genre_ids;
@@ -24,8 +26,33 @@ public class Movie implements Serializable {
     private boolean video;
     private float vote_average;
     private int vote_count;
+    private boolean isFavorite;
 
-    private final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
+    private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
+
+    public Movie() {
+    }
+
+    public Movie(int vote_count, float vote_average, boolean video, String title, float popularity,
+                 String poster_path, String release_date, String overview, String original_title,
+                 String original_language, int id, int[] genre_ids, String backdrop_path,
+                 boolean adult, boolean isFavorite) {
+        this.vote_count = vote_count;
+        this.vote_average = vote_average;
+        this.video = video;
+        this.title = title;
+        this.popularity = popularity;
+        this.poster_path = poster_path;
+        this.release_date = release_date;
+        this.overview = overview;
+        this.original_title = original_title;
+        this.original_language = original_language;
+        this.id = id;
+        this.genre_ids = genre_ids;
+        this.backdrop_path = backdrop_path;
+        this.adult = adult;
+        this.isFavorite = isFavorite;
+    }
 
     public boolean isAdult() {
         return adult;
@@ -139,12 +166,76 @@ public class Movie implements Serializable {
         this.vote_count = vote_count;
     }
 
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setIsFavorite(boolean isFavorite) {
+        this.isFavorite = isFavorite;
+    }
+
     public String constructImageURL(String imageSize) {
         return IMAGE_BASE_URL + imageSize + getPoster_path();
+    }
+
+    public static String constructImageURL(String path, String imageSize) {
+        return IMAGE_BASE_URL + imageSize + path;
     }
 
     public static List<Movie> initListFromJSON(String json) {
         Gson gson = new Gson();
         return gson.fromJson(json, new TypeToken<List<Movie>>(){}.getType());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeByte((byte) (adult ? 1 : 0));
+        dest.writeString(backdrop_path);
+        dest.writeIntArray(genre_ids);
+        dest.writeInt(id);
+        dest.writeString(original_language);
+        dest.writeString(original_title);
+        dest.writeString(overview);
+        dest.writeString(release_date);
+        dest.writeString(poster_path);
+        dest.writeFloat(popularity);
+        dest.writeString(title);
+        dest.writeByte((byte) (video ? 1 : 0));
+        dest.writeFloat(vote_average);
+        dest.writeInt(vote_count);
+    }
+
+    public static final Parcelable.Creator<Movie> CREATOR = new Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel source) {
+            return new Movie(source);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
+
+    private Movie(Parcel in) {
+        adult = in.readByte() != 0;
+        backdrop_path = in.readString();
+        genre_ids = in.createIntArray();
+        id = in.readInt();
+        original_language = in.readString();
+        original_title = in.readString();
+        overview = in.readString();
+        release_date = in.readString();
+        poster_path = in.readString();
+        popularity = in.readFloat();
+        title = in.readString();
+        video = in.readByte() != 0;
+        vote_average = in.readFloat();
+        vote_count = in.readInt();
     }
 }

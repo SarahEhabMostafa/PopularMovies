@@ -7,6 +7,6 @@ import java.util.ArrayList;
 /**
  * Created by Sarah E. Mostafa on 14-Oct-15.
  */
-public interface OnDataRetrieveSuccessListener {
+public interface OnMoviesRetrieveSuccessListener {
     void updateUI(ArrayList<Movie> movies);
 }

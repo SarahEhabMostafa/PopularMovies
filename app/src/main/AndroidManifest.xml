@@ -21,7 +21,8 @@
         <activity
             android:name=".view.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".view.PopularMoviesActivity" >
+            android:parentActivityName=".view.PopularMoviesActivity"
+            android:theme="@style/SettingsTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".view.PopularMoviesActivity" />
@@ -34,6 +35,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".view.PopularMoviesActivity" />
         </activity>
-    </application>
+        <activity
+            android:name=".view.MovieReviewsActivity"
+            android:label="@string/title_activity_movie_reviews" >
+        </activity>
 
+        <provider
+            android:authorities="com.sarahehabm.popularmovies"
+            android:name=".controller.database.MovieContentProvider"
+            android:enabled="true"
+            android:exported="false"/>
+    </application>
 </manifest>

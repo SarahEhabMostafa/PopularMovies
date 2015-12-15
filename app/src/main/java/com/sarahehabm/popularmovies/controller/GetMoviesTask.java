@@ -1,12 +1,16 @@
 package com.sarahehabm.popularmovies.controller;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.sarahehabm.popularmovies.Constants;
 import com.sarahehabm.popularmovies.R;
+import com.sarahehabm.popularmovies.controller.database.MovieContract.MovieEntry;
 import com.sarahehabm.popularmovies.model.Movie;
 import com.sarahehabm.popularmovies.model.MovieCollection;
 
@@ -26,12 +30,13 @@ public class GetMoviesTask extends AsyncTask<String, Void, ArrayList<Movie>> {
 
     private Context context;
     private OnRetrieveListener onRetrieveListener;
-    private OnDataRetrieveSuccessListener onDataRetrieveSuccessListener;
+    private OnMoviesRetrieveSuccessListener onMoviesRetrieveSuccessListener;
 
-    public GetMoviesTask(Context context, OnRetrieveListener onRetrieveListener, OnDataRetrieveSuccessListener onDataRetrieveSuccessListener) {
+    public GetMoviesTask(Context context, OnRetrieveListener onRetrieveListener,
+                         OnMoviesRetrieveSuccessListener onMoviesRetrieveSuccessListener) {
         this.context = context;
         this.onRetrieveListener = onRetrieveListener;
-        this.onDataRetrieveSuccessListener = onDataRetrieveSuccessListener;
+        this.onMoviesRetrieveSuccessListener = onMoviesRetrieveSuccessListener;
     }
 
     @Override
@@ -52,7 +57,7 @@ public class GetMoviesTask extends AsyncTask<String, Void, ArrayList<Movie>> {
             sortValue = params[0];
 
         try {
-            Uri builtUri = Uri.parse(Constants.BASE_URL).buildUpon()
+            Uri builtUri = Uri.parse(Constants.BASE_URL_MOVIES).buildUpon()
                     .appendQueryParameter(Constants.SORT_KEY, sortValue)
                     .appendQueryParameter(Constants.API_KEY, apiValue).build();
 
@@ -92,13 +97,44 @@ public class GetMoviesTask extends AsyncTask<String, Void, ArrayList<Movie>> {
                 }
             }
         }
+
         MovieCollection movieCollection = MovieCollection.initFromJSON(responseJson);
+        for (Movie movie: movieCollection.getResults()) {
+
+            Cursor cursor = context.getContentResolver().query(MovieEntry.CONTENT_URI,
+                    new String[]{MovieEntry.COLUMN_ID},
+                    MovieEntry.COLUMN_ID + " = ? ",
+                    new String[]{String.valueOf(movie.getId())},
+                    null);
+
+            long movieId;
+            if(cursor.moveToFirst()){
+                movieId = cursor.getInt(cursor.getColumnIndex(MovieEntry.COLUMN_ID));
+            } else {
+                ContentValues values = new ContentValues();
+                values.put(MovieEntry.COLUMN_ID, movie.getId());
+                values.put(MovieEntry.COLUMN_TITLE, movie.getTitle());
+                values.put(MovieEntry.COLUMN_OVERVIEW, movie.getOverview());
+                values.put(MovieEntry.COLUMN_RELEASE_DATE, movie.getRelease_date());
+                values.put(MovieEntry.COLUMN_POPULARITY, movie.getPopularity());
+                values.put(MovieEntry.COLUMN_VOTE_AVERAGE, movie.getVote_average());
+                values.put(MovieEntry.COLUMN_VOTE_COUNT, movie.getVote_count());
+                values.put(MovieEntry.COLUMN_POSTER_PATH, movie.getPoster_path());
+                values.put(MovieEntry.COLUMN_BACKDROP_PATH, movie.getBackdrop_path());
+                values.put(MovieEntry.COLUMN_VIDEO, String.valueOf(movie.isVideo()));
+
+                Uri insertedUri = context.getContentResolver().insert(MovieEntry.CONTENT_URI,
+                        values);
+
+                movieId = ContentUris.parseId(insertedUri);
+            }
+        }
+
         return (ArrayList<Movie>)movieCollection.getResults();
     }
 
     @Override
     protected void onPostExecute(ArrayList<Movie> movies) {
         onRetrieveListener.hideProgress();
-        onDataRetrieveSuccessListener.updateUI(movies);
     }
 }
